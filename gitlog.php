@@ -8,7 +8,7 @@ mb_internal_encoding("UTF-8");
 echo mb_internal_encoding();
 
 // auto git push .gitpush.php maiji
-exec('cd /home/mono-96/www/mono-96.jp/tmp/test', $op, $rv);
+exec('cd /home/mono-96/www/mono-96.jp/tmp/autoJob', $op, $rv);
 exec('git log',$op,$rv);
 echo '<pre>';
 print_r($op);
