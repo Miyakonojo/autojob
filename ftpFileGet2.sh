@@ -3,11 +3,13 @@
 
 if [ $(uname) = 'Darwin' ]; then # local
   homePath="$HOME/m96dev/autoJob/"
-  dlPath  ="$HOME/m96dev/autoJob/dlFiles"
+  dlPath="$HOME/m96dev/autoJob/dlFiles"
+  dlAllPath="$HOME/m96dev/autoJob/dlAllFiles"
   jsonPath="$HOME/m96dev/cred2.json"
 elif [ $(uname) = "FreeBSD" ]; then  #sakura Server
   homePath="$HOME/www/m96dev/autoJob/"
-  dlPath  ="$HOME/www/m96dev/autoJob/dlFiles" 
+  dlPath="$HOME/www/m96dev/autoJob/dlFiles" 
+  dlAllPath="$HOME/www/m96dev/autoJob/dlAllFiles" 
   jsonPath="$HOME/cred2.json"
 else
   exit
@@ -15,9 +17,13 @@ fi
 echo $homePath
 cd $homePath
 # Load username and P@assw0rd
-user=`./ftpIncFile.sh $jsonPath -u $1Ftp`
-pass=`./ftpIncFile.sh $jsonPath -p $1Ftp`
-
+if [ ! $2 ]; then
+  user=`./ftpIncFile.sh $jsonPath -u $1Ftp`
+  pass=`./ftpIncFile.sh $jsonPath -p $1Ftp`
+elif [ ! $3 ]; then
+  user=`./ftpIncFile.sh $jsonPath -u $2Ftp`
+  pass=`./ftpIncFile.sh $jsonPath -p $2Ftp`
+fi
 
 if [ ! $user ]; then
 echo check location cred2.json or 2nd parameter
@@ -32,7 +38,9 @@ today=`date "+%Y%m%d"`
 echo "article_${today}.txt"
 echo dl-item${today}*.csv
 cd dlFiles
-# <<REMOTE>> download only
+
+### <<REMOTE>> download only
+
 ftp -n $server << _EOF_
   user $user $pass
   prompt
@@ -49,17 +57,15 @@ _EOF_
   # zip today date 今日の日付をZIP
   zip dl`date -v -"0"d +%Y%m%d`.zip dl*`date -v -"0"d +%Y%m%d`*.csv
   # move 1day ago 昨日のCSVを移動
-  mv dl*`date -v -"1"d +%Y%m%d`*.csv $dlPath
+  mv dl*`date -v -"1"d +%Y%m%d`*.csv $dlAllPath
   # mode 2,3days ago 2,3日前のCSVを移動
-  mv dl*`date -v -"2"d +%Y%m%d`*.csv $dlPath
-  mv dl*`date -v -"3"d +%Y%m%d`*.csv $dlPath
+  mv dl*`date -v -"2"d +%Y%m%d`*.csv $dlAllPath
+  mv dl*`date -v -"3"d +%Y%m%d`*.csv $dlAllPath
 
   rm dl*`date -v -"5"d +%Y%m%d`*.csv
 
   # copy am1:00 file for sabun #差分用に1時台のファイルだけをコピー
-  cd dlFiles
-
-  #  cp dl-item${today}01*.csv ../dl-item20180Day.csv
+  cd $dlPath
   cp dl-item${today}*.csv ../dl-item20180Day.csv
 
   cd ..
