@@ -7,26 +7,28 @@ $sabun = '';
 exec('echo $(uname)', $uname, $rv); // Darwin or FreeBSD
 if ($uname[0]=='Darwin') {
   $git = '/usr/bin/'; //local
-  exec('cd /Users/mono05/Documents/test', $op, $rv);
+  $cd1 = '/home/mono05/m96dev/autoJob';
+  exec('cd $HOME/m96dev/autoJob', $op, $rv);
 }else{
   $git = '/usr/local/bin/'; //server
-  exec('cd /home/mono-96/www/mono-96.jp/tmp/test', $op, $rv);
+  $cd1 = '/home/health-mgr/www/m96dev/autoJob';
+  exec('cd $HOME/www/m96dev/autoJob/', $op, $rv);
 }
 exec($git.'git log --numstat --pretty="%H" --since="1 days ago" -- dl-item20180Day.utf8.csv \
-| awk \'NF==3 {plus+=$1; minus+=$2} END {printf("CSV差分合計%d行 (追加+%d, 削除-%d)\n", plus+minus, plus, minus)}\'', $sabun, $rv);
+| awk \'NF==3 {plus+=$1; minus+=$2} END {printf("CSV差分計%d行 (追加+%d, 削除-%d)\n", plus+minus, plus, minus)}\'', $sabun, $rv);
 exec($git.'git log --numstat --pretty --since="1 days ago" -- dlFiles/*.csv', $sabun, $rv);
 
 
 for($i = 0 ; $i < count($sabun); $i++){
   $comment .= $sabun[$i]."\n" ;
 }
-// echo $comment;
+echo $comment;
 /// from git1.php
 
-exec('cd /home/mono-96/www/mono-96.jp/tmp/test', $op, $rv);
+exec('cd '.$cd1, $op, $rv);
 exec('/usr/local/bin/git status', $op, $rv);
 exec('/usr/local/bin/git add -A', $op, $rv);
-exec('/usr/local/bin/git commit -m ":up:変更感知 $(date "+%m-%d %T")'.$comment.'" || true', $op, $rv);
+exec('/usr/local/bin/git commit -m ":up: $(date "+%m-%d %T") '.$comment.'" || true', $op, $rv);
 exec('/usr/local/bin/git push -f origin master:master', $op, $rv);
 print_r($op);
 print_r($rv);

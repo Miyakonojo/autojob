@@ -2,10 +2,12 @@
 # cd /home/mono-96/www/mono-96.jp/tmp/test/dlFiles
 
 if [ $(uname) = 'Darwin' ]; then # local
-  homePath="$HOME/Documents/test/"
-  jsonPath="$HOME/Documents/ryLogin/cred2.json"
+  homePath="$HOME/m96dev/autoJob/"
+  dlPath  ="$HOME/m96dev/autoJob/dlFiles"
+  jsonPath="$HOME/m96dev/cred2.json"
 elif [ $(uname) = "FreeBSD" ]; then  #sakura Server
-  homePath="$HOME/www/mono-96.jp/tmp/test/"
+  homePath="$HOME/www/m96dev/autoJob/"
+  dlPath  ="$HOME/www/m96dev/autoJob/dlFiles" 
   jsonPath="$HOME/cred2.json"
 else
   exit
@@ -42,28 +44,29 @@ ftp -n $server << _EOF_
   quit
 _EOF_
 
-if [ $(uname) = "FreeBSD" ]; then
+# if [ $(uname) = "FreeBSD" ]; then
   # <<LOCAL>> 1:zip and 2:move old files to backup folder
   # zip today date 今日の日付をZIP
   zip dl`date -v -"0"d +%Y%m%d`.zip dl*`date -v -"0"d +%Y%m%d`*.csv
   # move 1day ago 昨日のCSVを移動
-  mv dl*`date -v -"1"d +%Y%m%d`*.csv /home/mono-96/www/mono-96.jp/dlFiles
+  mv dl*`date -v -"1"d +%Y%m%d`*.csv $dlPath
   # mode 2,3days ago 2,3日前のCSVを移動
-  mv dl*`date -v -"2"d +%Y%m%d`*.csv /home/mono-96/www/mono-96.jp/dlFiles
-  mv dl*`date -v -"3"d +%Y%m%d`*.csv /home/mono-96/www/mono-96.jp/dlFiles
+  mv dl*`date -v -"2"d +%Y%m%d`*.csv $dlPath
+  mv dl*`date -v -"3"d +%Y%m%d`*.csv $dlPath
 
   rm dl*`date -v -"5"d +%Y%m%d`*.csv
 
   # copy am1:00 file for sabun #差分用に1時台のファイルだけをコピー
   cd dlFiles
 
-#  cp dl-item${today}01*.csv ../dl-item20180Day.csv
+  #  cp dl-item${today}01*.csv ../dl-item20180Day.csv
   cp dl-item${today}*.csv ../dl-item20180Day.csv
 
   cd ..
   iconv -f sjis -t utf-8 dl-item20180Day.csv > dl-item20180Day.utf8.csv
   
-fi
+# fi
+
 # cp dl-item`date "+%Y%m%d"`*.csv ../dl-item2018Day.csv
 
 echo $today
